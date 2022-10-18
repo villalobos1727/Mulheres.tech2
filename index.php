@@ -1,35 +1,109 @@
 <?php
 
-$mesangem = "Estou com fomen";
+// Criando variáveis
+$mesangem = "Estou com sede!";
+$senha = "0123456789";
 
-$titulo = 'meu site Yeximar';
+// Criando uma string
+$titulo = 'yeximar villalobos';
+
+// CRiando um number
+$idade_do_fesso = -17.99;
+
+$idadeDoFesso = 17;
+$CASA = 'Amarela';
+$casa = 'azul';
+
+$cnpj = '875908347095687340258';
+
+// Criand uma boolean
+$amarelo = true;
+
+// Criando constante em PHP;
+define('CASA', 'azul');
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>meu site Yeximar</title>
+    <title><?php echo $titulo ?></title>
 </head>
+
 <body>
-  
-<?php
 
-echo "Ola mundo!";
+    <?php echo "Olá terra!<br>\n";
+    echo "\t<p>Olá planeta!</p>\n"; ?>
 
+    <?php
 
-echo '<br> Estou aqui!';
+    echo somar(10, 2) . "<br>";
 
-echo '<p> E voce?';
+    echo "Olá mundo!";
 
-echo $mesangem;
+    echo '<p>Estou aqui!</p>';
 
-echo '<br> 18';
+    // echo `E você?`; Isso está errado.
 
-?>
+    /*
+Este comentário
+tem várias linhas 
+*/
+
+    /* uma linha só */
+
+    echo $mesangem;
+
+    echo 18.99;
+
+    echo $idade_do_fesso;
+
+    ?>
 
 </body>
+
 </html>
+<?php
+
+echo 'Acabou!';
+
+echo $idadeDoFesso;
+
+
+echo '<br>' . $CASA . "<br>" . $casa . '<br>';
+
+echo '<br>{$CASA}<br>{$casa}<br>';
+
+
+if ($amarelo) {
+    echo '<p>Amarelo</p>';
+} else if (!$amarelo) {
+    echo '<p>Sem cor</p>';
+} else {
+}
+
+
+
+$idade_do_fesso = "vinte e cinco anos";
+
+echo '<br>' . $idade_do_fesso;
+
+// define('casa', 'amarela'); → Constate já foi criada antes...
+
+echo '<h1>' . casa . '</h1>';
+
+
+
+// Função que soma dois valores e exibe o resultado no navegador:
+function somar($val1, $val2)
+{
+    $soma = $val1 + $val2;
+    return $soma;
+}
+
+
+
+?>
