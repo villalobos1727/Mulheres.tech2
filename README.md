@@ -1,2 +1,2 @@
-# mulheres.tech2
- versão fullstack do site mulheres.tech
+# Mulheres.Tech.2
+ Versão fullstack do aplicativo Mulheres.Tech.
