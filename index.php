@@ -1,230 +1,235 @@
-<!DOCTYPE html>
+<?php
 
-<!--
-  Inicio do documento HTML5
-  Para saber mais:
-    • https://www.w3schools.com/html
--->
+/**
+ * Importa as configurações do site:
+ * Referências:
+ *  • https://www.w3schools.com/php/php_includes.asp
+ **/
+require('includes/config.php');
+
+/**
+ * Obtém e filtra o nome da página da URL:
+ * Referências:
+ *  • https://www.w3schools.com/jsref/jsref_trim_string.asp
+ *  • https://www.php.net/manual/en/function.urldecode.php
+ *  • https://www.w3schools.com/php/func_string_htmlentities.asp
+ *  • https://www.w3schools.com/php/php_superglobals.asp
+ *  • https://www.w3schools.com/php/php_superglobals_server.asp
+ **/
+$route = trim(urldecode($_SERVER['QUERY_STRING']));
+
+// Se não solicitou uma rota, usa a rota da página inicial:
+if ($route == '') $route = 'home';
+
+/**
+ * Monta todos os caminhos dos arquivos da página em uma coleção:
+ * Referências:
+ *  • https://www.w3schools.com/php/php_arrays.asp
+ *  • https://www.w3schools.com/php/func_array.asp
+ **/
+$page = array(
+  'php' => "pages/{$route}/index.php",
+  'css' => "pages/{$route}/index.css",
+  'js' => "pages/{$route}/index.js",
+);
+
+/**
+ * Verifica se a rota solicitada para o arquivo PHP existe:
+ * Referências:
+ *  • https://www.w3schools.com/php/func_filesystem_file_exists.asp
+ **/
+if (!file_exists($page['php'])) :
+
+  // Se não existe, carrega, explicitamente, a rota da página 404:
+  $page = array(
+    'php' => "pages/404/index.php",
+    'css' => "pages/404/index.css",
+    'js' => "pages/404/index.js",
+  );
+endif;
+
+// Carrega a página PHP solicitada pela rota:
+require($page['php']);
+
+// Carrega o CSS da página solicitada, somente se ele existe:
+if (file_exists($page['css']))
+  // Gera a tag que carrega o CSS da página:
+  $page_css = "<link rel=\"stylesheet\" href=\"/{$page['css']}\">";
+
+// Carrega o JavaScript da página solicitada, somente se ele existe:
+if (file_exists($page['js']))
+  // Gera a tag que carrega o JavaScript da página:
+  $page_js = "<script src=\"/{$page['js']}\"></script>";
+
+/**
+ * Formata o título da página:
+ * OBS: O título de cada página é definido no arquivo "index.php" da própria
+ * página, na variável "$page_title".
+ **/ 
+if ($page_title == '')
+  // Se não definiu um título, usa o slogan do site para compor o título:
+  $title = "{$c['sitename']} {$c['titlesep']} {$c['siteslogan']}";
+else
+  // Se definiu um título, usa o título da página na composição do título:
+  $title = "{$c['sitename']} {$c['titlesep']} {$page_title}";
+
+// Inicializa a lista de redes sociais do rodapé:
+$fsocial = '<nav><h4>Redes sociais:</h4>';
+
+/**
+ * Loop para obter cada rede social:
+ * OBS: a lista de redes sociais está definida em "includes/config.php", na 
+ * coleção "$s[]".
+ * Referências:
+ *  • https://www.w3schools.com/js/js_loop_for.asp
+ *  • https://www.w3schools.com/php/func_array_count.asp
+ **/ 
+for ($i = 0; $i < count($s); $i++) :
+
+  // Adiciona cada rede social na lista:
+  $fsocial .= <<<HTML
+
+<a href="{$s[$i]['link']}" target="_blank" title="Acesse nosso {$s[$i]['name']}">
+  <i class="fa-brands {$s[$i]['icon']} fa-fw"></i>
+  <span>{$s[$i]['name']}</span>
+</a>
+
+HTML;
+
+endfor;
+
+// Conclui a lista de redes sociais do rodapé:
+$fsocial .= '</nav>';
+
+?>
+<!DOCTYPE html>
 <html lang="pt-br">
-<!-- Cabeçalho com metadados do documento -->
 
 <head>
-  <!-- Define a tabela de caracteres universal -->
   <meta charset="UTF-8" />
-
-  <!-- Define o ícone de favoritos -->
-  <link rel="icon" href="/img/favicon.jpg">
-
-  <!-- Torna a página responsivo -->
+  <link rel="icon" href="<?php echo $c['sitefavicon'] ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Carrega folhas de estilo do aplicativo -->
   <link rel="stylesheet" href="/style.css" />
-
-  <!-- Folhas de estilos de cada página serão carregadas aqui -->
-  <link rel="stylesheet" href="" id="pageCSS">
-
-  <!-- 
-    Importa a biblioteca Font Awesome via CDN
-    Para saber mais:
-      • https://fontawesome.com/
-  -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-
-  <!-- Título do documento -->
-  <title>Mulheres.Tech</title>
-
+  <?php
+  // Carrega as folhas de estilo da página solicitada:
+  echo $page_css;
+  ?>
+  <title><?php echo $title ?></title>
 </head>
 
-<!-- 
-  Corpo do documento (viewport)
-  Para saber mais:
-    • https://www.w3schools.com/css/css_rwd_viewport.asp
--->
-
 <body>
-  <!-- Âncora do início da página -->
   <a id="top"></a>
-
-  <!-- 
-    Container da página:
-    Este elemento permite limitar o tamanho mínimo e máximo da página
-    e também centraliza ela na tela.
-  -->
   <div id="wrap">
-    <!-- Cabeçalho da página -->
-    <header>
-      <!-- Logotipo clicável usando Font Awesome -->
-      <a href="home" title="Página inicial">
-        <i class="fa-solid fa-laptop-code fa-fw"></i>
-      </a>
 
-      <!-- Título e slogan do site / página -->
+    <header>
+      <a href="/" title="Página inicial">
+        <?php echo $c['sitelogo'] ?>
+      </a>
       <h1>
-        Mulheres.Tech
-        <small>Programadoras do Futuro</small>
+        <?php echo $c['sitename'] ?>
+        <small><?php echo $c['siteslogan'] ?></small>
       </h1>
     </header>
 
-    <!--
-      Menu principal:
-        / → Raiz do aplicativo → Será carregada a "index.html";
-        /contacts → Página com formulário e links de contato;
-        /about → Sobre o site, autor e privacidade;
-        /profile → Gestão do usuário (login, logou, perfil, ...).
-    -->
     <nav>
-      <!-- Link do item de menu para a página especificada -->
-      <a href="home" title="Página inicial">
-        <!-- Ícone do ítem usando Font Awesome -->
+      <a href="/" title="Página inicial">
         <i class="fa-solid fa-house-chimney fa-fw"></i>
-        <!-- Etiqueta (label) do item -->
         <span>Início</span>
       </a>
-
-      <!-- 
-        Outros itens do menu. 
-        Tem a mesma estrutura do anterior. 
-      -->
-
-      <a href="contacts" title="Faça contato" class="dropable">
+      <a href="/?contacts" title="Faça contato" class="dropable">
         <i class="fa-solid fa-comments fa-fw"></i>
         <span>Contatos</span>
       </a>
-
-      <a href="about" title="Sobre a gente" class="dropable">
+      <a href="/?about" title="Sobre a gente" class="dropable">
         <i class="fa-solid fa-circle-info fa-fw"></i>
         <span>Sobre</span>
       </a>
-
-      <a href="profile" title="Perfil de usuário" class="dropable">
+      <a href="/?profile" title="Perfil de usuário" class="dropable">
         <i class="fa-regular fa-user fa-fw"></i>
         <span>Perfil</span>
       </a>
-
-      <!--
-        Botão que controla o menu dropdown:
-        Este botão só aparece em resoluções menores (mobile frist).
-        Observe que 'href="menu"', para que seja identificado pelo JavaScript.
-      -->
-      <a href="menu" id="btnMenu" title="Abre/fecha menu">
+      <a href="/?menu" id="btnMenu" title="Abre/fecha menu">
         <i class="fa-solid fa-ellipsis-vertical fa-fw"></i>
       </a>
     </nav>
 
-    <!-- Menu dropdown: Adicione itens ao menu aqui. -->
     <div id="dropable">
       <nav>
-        <a href="profile" title="Perfil de usuário"><i class="fa-regular fa-user fa-fw"></i><span>Perfil</span></a>
-        <!-- Separador -->
+        <a href="/?profile" title="Perfil de usuário"><i class="fa-regular fa-user fa-fw"></i><span>Perfil</span></a>
         <hr>
-        <a href="search" title="Procurar no site"><i class="fa-solid fa-magnifying-glass fa-fw"></i><span>Procurar</span></a>
+        <a href="/?search" title="Procurar no site"><i class="fa-solid fa-magnifying-glass fa-fw"></i><span>Procurar</span></a>
         <hr>
-        <a href="contacts" title="Faça contato"><i class="fa-solid fa-comments fa-fw"></i><span>Contatos</span></a>
-        <a href="about" title="Sobre a gente..."><i class="fa-solid fa-circle-info fa-fw"></i><span>Sobre</span></a>
-        <a href="site" title="Sobre o site..."><i class="fa-solid fa-globe fa-fw"></i><span>Sobre o site</span></a>
-        <a href="team" title="Quem somos..."><i class="fa-solid fa-users fa-fw"></i><span>Quem somos</span></a>
-        <a href="policies" title="Políticas de Privacidade"><i class="fa-solid fa-user-lock fa-fw"></i><span>Sua privacidade</span></a>
+        <a href="/?contacts" title="Faça contato"><i class="fa-solid fa-comments fa-fw"></i><span>Contatos</span></a>
+        <a href="/?about" title="Sobre a gente..."><i class="fa-solid fa-circle-info fa-fw"></i><span>Sobre</span></a>
+        <a href="/?site" title="Sobre o site..."><i class="fa-solid fa-globe fa-fw"></i><span>Sobre o site</span></a>
+        <a href="/?team" title="Quem somos..."><i class="fa-solid fa-users fa-fw"></i><span>Quem somos</span></a>
+        <a href="/?policies" title="Políticas de Privacidade"><i class="fa-solid fa-user-lock fa-fw"></i><span>Sua privacidade</span></a>
       </nav>
     </div>
 
-    <!-- 
-      Bloco do conteúdo.
-      Este bloco terá um conteúdo diferente para cada página acessada.
-    -->
-    <main id="content"></main>
+    <main id="content">
+      <?php
+      // Exibe o conteúdo dinâmico da página:
+      echo $page_content;
+      ?>
+    </main>
 
-    <!-- Rodapé -->
     <footer>
-      <!-- Bloco superior do rodapé -->
+
       <div id="fsup">
-        <!-- Link para a raiz do aplicativo (página inicial) -->
-        <a href="home" title="Página inicial">
+        <a href="/" title="Página inicial">
           <i class="fa-solid fa-house-chimney fa-fw"></i>
         </a>
-
-        <!-- Licença do aplicativo -->
-        <div id="copy">&copy; 2022 Mulheres.Tech</div>
-
-        <!-- Link para o topo desta página -->
+        <div id="copy">&copy; 2022 <?php echo $c['sitename'] ?></div>
         <a href="#top" title="Topo da página">
           <i class="fa-solid fa-circle-up fa-fw"></i>
         </a>
       </div>
 
-      <!-- Bloco inferior do rodapé -->
       <div id="finf">
-        <!-- Menu de redes sociais -->
-        <nav>
-          <h4>Redes sociais:</h4>
-          <a href="https://facebook.com/Mulheres.Tech" target="_blank" title="Acesse nosso Facebook">
-            <i class="fa-brands fa-square-facebook fa-fw"></i>
-            <span>Facebook</span>
-          </a>
-          <a href="https://youtube.com/Mulheres.Tech" target="_blank" title="Nosso canal no Youtube">
-            <i class="fa-brands fa-square-youtube fa-fw"></i>
-            <span>Youtube</span>
-          </a>
-          <a href="https://github.com/Mulheres.Tech" target="_blank" title="Nossa página no GitHub">
-            <i class="fa-brands fa-square-github fa-fw"></i>
-            <span>GitHub</span>
-          </a>
-        </nav>
-
-        <!-- Menu de links internos -->
+        <?php
+        // Exibe a lista de redes sociais:
+        echo $fsocial;
+        ?>
         <nav>
           <h4>Acesso rápido:</h4>
-          <a href="contacts">
+          <a href="/?contacts">
             <i class="fa-solid fa-comments fa-fw"></i>
             <span>Contatos</span>
           </a>
-          <a href="about">
+          <a href="/?about">
             <i class="fa-solid fa-circle-info fa-fw"></i>
             <span>Sobre</span>
           </a>
-          <a href="policies">
+          <a href="/?policies">
             <i class="fa-solid fa-user-lock fa-fw"></i>
             <span>Sua privacidade</span>
           </a>
         </nav>
       </div>
     </footer>
-
-    <!-- Rack para exibir margem inferior do footer sem usar "overflow: auto" -->
     <span>&nbsp;</span>
 
-    <!-- Fecha o wrap -->
   </div>
 
-  <!-- Mensagem sobre o uso de cookies -->
   <div id="acCookies">
-
     <div class="cookieBody">
-
       <div class="cookieBox">
-
         <div>
           Usamos cookies para lhe fornecer uma experiência de navegação melhor e mais segura.
           Não se preocupe, todos os seus dados pessoais estão protegidos.
         </div>
         <button id="accept">Entendi!</button>
-
       </div>
-
     </div>
-
   </div>
 
-  <!--
-    Importa a biblioteca JavaScript "jQuery" via CDN
-    Para saber mais:
-      • https://jquery.com/
-      • https://www.w3schools.com/jquery/
-  -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-
-  <!-- Inclui o JavaScript do aplicativo, que depende de "jQuery" -->
   <script src="/script.js"></script>
+  <?php
+  // Carrega o javaScript da página solicitada:
+  echo $page_js;
+  ?>
 </body>
 
 </html>
