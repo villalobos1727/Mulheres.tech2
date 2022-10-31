@@ -7,9 +7,46 @@ require('config.php');
  * Todo o código PHP desta página começa aqui! *
  ***********************************************/
 
-// Define o título da página:
-$page_title = 'Página modelo';
-$id = $_SERVER ['QUERY_STRING'];
+// 1) Obtém o ID da URL:
+$id = intval($_SERVER['QUERY_STRING']);
+
+// 2) Verifica se o ID é igual a 0
+if ($id == 0)
+    // 2.1) Se for, carrega página "404.php".
+    header('Location: 404.php');
+
+// 3) Escreve o SQL que obtém o artigo:
+$sql = <<<SQL
+
+SELECT *,
+DATE_FORMAT(adate, '%d de %M de %Y às %H:%i') AS adatebr
+FROM articles
+WHERE aid = '{$id}'
+    AND astatus = 'online'
+    AND adate <= NOW()
+
+SQL;
+$res = $conn->query($sql);
+
+// 4) Verifica se o artigo existe:
+if ($res->num_rows != 1)
+    // 4.1) Se não existe, carrega página "404.php".
+    header('Location: 404.php');
+
+// 5) Extrai os dados do artigo:
+$art = $res->fetch_assoc();
+
+// 6) Formata o artigo para exibição:
+$page_content .= <<<HTML
+
+<h3>{$art['title']}</h3>
+<span>{$art['adatebr']}</span>
+{$art['content']}
+
+HTML;
+
+// 7) Define o título da página como título do artigo:
+
 /************************************************
  * Todo o código PHP desta página termina aqui! *
  ************************************************/
@@ -22,9 +59,7 @@ require('header.php');
  ********************************************************/
 ?>
 
-<h2>Página modelo</h2>
-<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Soluta, sint sequi nam tempora quis doloremque cupiditate eos quaerat nulla laudantium perspiciatis. Nisi esse commodi ipsam nostrum fuga omnis iure quos.</p>
-<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum excepturi laudantium maxime voluptatibus quia deserunt voluptatum delectus odit consequatur, eligendi reiciendis nulla quas laborum rerum mollitia, voluptatem sequi velit omnis.</p>
+<?php echo $page_content ?>
 
 <?php
 /*********************************************************

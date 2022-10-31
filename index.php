@@ -37,7 +37,7 @@ else :
 
 $page_content .= <<<HTML
 
-<hr>
+<p>---------------------------------------</p>
 <img src="{$art['thumbnail']}" alt="{$art['title']}">
 <h3><a href="view.php?{$art['aid']}">{$art['title']}</a></h3>
 <p>{$art['resume']}</p>

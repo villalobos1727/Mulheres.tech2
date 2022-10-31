@@ -8,7 +8,7 @@ require('config.php');
  ***********************************************/
 
 // Define o título da página:
-$page_title = 'erro 404';
+$page_title = 'Erro 404';
 
 /************************************************
  * Todo o código PHP desta página termina aqui! *
@@ -22,7 +22,7 @@ require('header.php');
  ********************************************************/
 ?>
 
-<h2>Ooooop!</h2>
+<h2>Oooops!</h2>
 <p>A página que você está tentando acessar está indisponível ou não existe...</p>
 
 <?php
